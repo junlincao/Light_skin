@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.cjl.MainActivity">
+
+    <RadioGroup
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="10dp">
+
+        <RadioButton
+            android:id="@+id/btn_skin_default"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="默认皮肤" />
+
+        <RadioButton
+            android:id="@+id/btn_skin_custom1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:text="皮肤1" />
+
+        <RadioButton
+            android:id="@+id/btn_skin_custom2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:text="皮肤2" />
+
+    </RadioGroup>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="10dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="10dp">
+
+            <TextView
+                android:id="@+id/text_view_in_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/color_bg"
+                android:text="change text color and background color"
+                android:textColor="@color/text_color" />
+
+            <Button
+                android:id="@+id/button_in_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/selector_bg"
+                android:text="test_button"
+                android:textColor="@color/text_color" />
+
+            <TextView
+                android:id="@+id/text_view_in_layout2"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/bg1"
+                android:gravity="center"
+                android:padding="10dp"
+                android:text="only change background"
+                android:textColor="#fff" />
+
+            <com.cjl.CustomView1
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="10dp"
+                android:background="@color/color_bg"
+                app:paintTextColor="@color/text_color"
+                app:paintTextSize="16dp" />
+
+            <com.cjl.CustomView2
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="10dp"
+                android:background="@color/color_bg" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:src="@mipmap/ic_launcher_round"/>
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@mipmap/ic_launcher"
+                android:background="@color/text_color"
+                android:padding="@dimen/default_padding"/>
+
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

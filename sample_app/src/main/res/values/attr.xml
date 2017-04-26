@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="CustomView1">
+        <attr name="paintTextSize" format="dimension" />
+        <attr name="paintTextColor" format="color" />
+    </declare-styleable>
+
+    <declare-styleable name="CustomView2">
+        <attr name="paintTextSize2" format="dimension"/>
+        <attr name="paintTextColor2" format="color" />
+    </declare-styleable>
+</resources>

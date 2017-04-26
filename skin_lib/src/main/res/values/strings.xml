@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Light_skin</string>
+
+    <item name="TAG_FOR_SKIN" type="id"/>
+</resources>
