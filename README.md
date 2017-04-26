@@ -2,7 +2,7 @@
 一个轻量级但功能强大的换肤库，一个重新造的轮子...
 
 
-###集成步骤：
+### 集成步骤：
 1. 在Application中初始化皮肤：
 ```
 SkinManager.getInstance().init(this);
@@ -18,7 +18,7 @@ SkinActivityDelegate.delegate(this);
 ```
 
 
-###皮肤库文件制作
+### 皮肤库文件制作
 皮肤即为apk文件。皮肤包不用包含代码，只包含资源文件。
 将要换肤的资源文件保证与主app中相同类型的资源文件名相同即可。
 
