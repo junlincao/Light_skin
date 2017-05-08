@@ -33,9 +33,6 @@ public class SkinAttr {
 
     @SuppressWarnings("unchecked")
     public void apply(ResourceManager resourceManager, View view) {
-        Object obj = attr.getTypeValue(resourceManager, resName, resType);
-        if (obj != null) {
-            attr.apply(view, obj);
-        }
+        attr.apply(view, attr.getTypeValue(resourceManager, resName, resType));
     }
 }

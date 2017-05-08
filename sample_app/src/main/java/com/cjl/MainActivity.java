@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.CompoundButton;
 import android.widget.RadioButton;
-import android.widget.Toast;
 
 import com.cjl.skin.BaseSkinActivity;
 import com.cjl.skin.SkinManager;
@@ -86,7 +85,7 @@ public class MainActivity extends BaseSkinActivity {
 
             @Override
             public void onError(Exception e) {
-                Toast.makeText(getApplicationContext(), "change skin failed！", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getApplicationContext(), "change skin failed！", Toast.LENGTH_SHORT).show();
                 Log.e("---", "change skin failed！", e);
             }
 

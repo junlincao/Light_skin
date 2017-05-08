@@ -15,8 +15,6 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 
-import com.youyu.skin.R;
-
 import java.io.File;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
@@ -39,7 +37,7 @@ public class SkinManager {
     private String mCurSkinPath;
 
     private List<ISkinChangedListener> mSkinChangedListeners = new LinkedList<>();
-    private List<WeakReference<View>> mSkinViews = new LinkedList<>();
+    private List<SkinView> mSkinViews = new LinkedList<>();
 
     private SkinManager() {
     }
@@ -234,8 +232,7 @@ public class SkinManager {
      * @param skinViews 换肤属性
      */
     public void addSkinView(View view, List<SkinAttr> skinViews) {
-        view.setTag(R.id.TAG_FOR_SKIN, skinViews);
-        mSkinViews.add(new WeakReference<>(view));
+        mSkinViews.add(new SkinView(view, skinViews));
     }
 
     /**
@@ -265,16 +262,13 @@ public class SkinManager {
     @SuppressWarnings("unchecked")
     private void notifyChangedListeners() {
         ResourceManager rm = getResourceManager();
-        for (Iterator<WeakReference<View>> it = mSkinViews.iterator(); it.hasNext(); ) {
-            View view = it.next().get();
+        for (Iterator<SkinView> it = mSkinViews.iterator(); it.hasNext(); ) {
+            SkinView skinView = it.next();
+            View view = skinView.viewRef.get();
             if (view == null) {
                 it.remove();
             } else {
-                Object tag = view.getTag(R.id.TAG_FOR_SKIN);
-                if (tag == null || !(tag instanceof List)) {
-                    throw new RuntimeException("Don't use 'R.id.TAG_FOR_SKIN', which is used for skin!");
-                }
-                applyViewSkin(view, (List<SkinAttr>) tag);
+                applyViewSkin(view, skinView.attrs);
             }
         }
 
@@ -341,6 +335,16 @@ public class SkinManager {
         @Override
         public void onComplete() {
 
+        }
+    }
+
+    private static class SkinView {
+        WeakReference<View> viewRef;
+        List<SkinAttr> attrs;
+
+        SkinView(View view, List<SkinAttr> attrs) {
+            this.viewRef = new WeakReference<>(view);
+            this.attrs = attrs;
         }
     }
 }

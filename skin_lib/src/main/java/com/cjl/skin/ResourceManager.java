@@ -6,10 +6,9 @@ import android.content.res.AssetManager;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.ColorRes;
-import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringDef;
+import android.support.v4.content.ContextCompat;
 
 import java.util.HashMap;
 
@@ -34,22 +33,25 @@ public class ResourceManager {
 
     }
 
-    private Resources mResources;
-    private String mPluginPackageName;
+    private boolean isBaseResource;
+    private Context mBaseContext;
+    private Resources mSkinResource;
+    private String mSkinPackageName;
 
     private ResourceManager.VectorDrawableSupport mVectorSupport;
 
-    private boolean mSearchIdFromMap = true;
     private HashMap<String, Integer> mDrawableMap;
     private HashMap<String, Integer> mColorMap;
 
 
-    ResourceManager(Context context, Resources res, String pluginPackageName) {
-        mResources = res;
-        mPluginPackageName = pluginPackageName;
-        mSearchIdFromMap = false;
-
-        mVectorSupport = new ResourceManager.VectorDrawableSupport(context, res, pluginPackageName);
+    ResourceManager(Context context, Resources res, String skinPackageName) {
+        mBaseContext = context;
+        mSkinResource = res;
+        mSkinPackageName = skinPackageName;
+        isBaseResource = context.getPackageName().equals(skinPackageName);
+        if (!isBaseResource) {
+            mVectorSupport = new ResourceManager.VectorDrawableSupport(context, res, skinPackageName);
+        }
     }
 
     ResourceManager(Context context, Resources res, String pluginPackageName,
@@ -58,105 +60,164 @@ public class ResourceManager {
 
         mColorMap = colorMap;
         mDrawableMap = drawableMap;
-        mSearchIdFromMap = true;
     }
 
     @Nullable
     public Drawable getDrawableByName(String name) {
-        if (mSearchIdFromMap && mDrawableMap != null) {
-            Integer tmpId = mDrawableMap.get(name);
-            return tmpId == null ? null : getDrawableById(tmpId);
-        } else {
-            int id = mResources.getIdentifier(name, TYPE_DRAWABLE, mPluginPackageName);
-            return getDrawableById(id);
-        }
-    }
+        int id = 0;
+        boolean isSkinRes = true;
 
-    @Nullable
-    Drawable getDrawableById(@DrawableRes int id) {
-        if (id == 0) {
-            return null;
+        if (!isBaseResource && mDrawableMap != null) {
+            Integer tmpId = mDrawableMap.get(name);
+            if (tmpId != null) {
+                id = tmpId;
+            }
+        } else if (!isBaseResource) {
+            id = mSkinResource.getIdentifier(name, TYPE_DRAWABLE, mSkinPackageName);
         }
-        Drawable d = mVectorSupport.loadVectorDrawable(id);
-        return d == null ? mResources.getDrawable(id) : d;
+        if (id <= 0) {
+            isSkinRes = false;
+            id = mBaseContext.getResources().getIdentifier(name, TYPE_DRAWABLE, mBaseContext.getPackageName());
+        }
+        if (isSkinRes) {
+            Drawable d = mVectorSupport.loadVectorDrawable(id); // checkVectorDrawable
+            return d == null ? mSkinResource.getDrawable(id) : d;
+        } else {
+            // checkVectorDrawable first
+            Drawable d = VectorDrawableLoader.loadDrawable(mBaseContext, mBaseContext.getResources(), id);
+            return d == null ? ContextCompat.getDrawable(mBaseContext, id) : d;
+        }
     }
 
     @Nullable
     public Drawable getMipmapByName(String name) {
-        int id = mResources.getIdentifier(name, TYPE_MIPMAP, mPluginPackageName);
-        if (id == 0) {
-            return null;
+        int id = 0;
+        boolean isSkinRes = true;
+        if (!isBaseResource) {
+            id = mSkinResource.getIdentifier(name, TYPE_MIPMAP, mSkinPackageName);
         }
-        Drawable d = mVectorSupport.loadVectorDrawable(id);
-        return d == null ? mResources.getDrawable(id) : d;
+        if (id == 0) {
+            isSkinRes = false;
+            id = mBaseContext.getResources().getIdentifier(name, TYPE_MIPMAP, mBaseContext.getPackageName());
+        }
+        if (isSkinRes) {
+            Drawable d = mVectorSupport.loadVectorDrawable(id); // checkVectorDrawable
+            return d == null ? mSkinResource.getDrawable(id) : d;
+        } else {
+            // checkVectorDrawable first
+            Drawable d = VectorDrawableLoader.loadDrawable(mBaseContext, mBaseContext.getResources(), id);
+            return d == null ? ContextCompat.getDrawable(mBaseContext, id) : d;
+        }
     }
 
     @Nullable
     public Integer getColor(String name) {
-        if (mSearchIdFromMap && mColorMap != null) {
-            Integer id = mColorMap.get(name);
-            return id == null ? null : mResources.getColor(id);
-        } else {
-            int id = mResources.getIdentifier(name, TYPE_COLOR, mPluginPackageName);
-            return id == 0 ? null : mResources.getColor(id);
+        int id = 0;
+        if (!isBaseResource && mColorMap != null) {
+            id = mColorMap.get(name);
+        } else if (!isBaseResource) {
+            id = mSkinResource.getIdentifier(name, TYPE_COLOR, mSkinPackageName);
         }
-    }
-
-    @Nullable
-    Integer getColor(@ColorRes int id) {
-        return id == 0 ? null : mResources.getColor(id);
+        if (id == 0) {
+            id = mBaseContext.getResources().getIdentifier(name, TYPE_COLOR, mBaseContext.getPackageName());
+            return id == 0 ? null : ContextCompat.getColor(mBaseContext, id);
+        } else {
+            return mSkinResource.getColor(id);
+        }
     }
 
     @Nullable
     public ColorStateList getColorStateList(String name) {
-        if (mSearchIdFromMap && mColorMap != null) {
-            Integer id = mColorMap.get(name);
-            return id == null ? null : mResources.getColorStateList(id);
+        int id = 0;
+        if (!isBaseResource && mColorMap != null) {
+            id = mColorMap.get(name);
+        } else if (!isBaseResource) {
+            id = mSkinResource.getIdentifier(name, TYPE_COLOR, mSkinPackageName);
+        }
+        if (id == 0) {
+            id = mBaseContext.getResources().getIdentifier(name, TYPE_COLOR, mBaseContext.getPackageName());
+            return id == 0 ? null : ContextCompat.getColorStateList(mBaseContext, id);
         } else {
-            int id = mResources.getIdentifier(name, TYPE_COLOR, mPluginPackageName);
-            return id == 0 ? null : mResources.getColorStateList(id);
+            return mSkinResource.getColorStateList(id);
         }
     }
 
     @Nullable
-    ColorStateList getColorStateList(int id) {
-        return id == 0 ? null : mResources.getColorStateList(id);
-    }
-
-    @Nullable
     public Integer getInteger(String name) {
-        int id = mResources.getIdentifier(name, TYPE_INTEGER, mPluginPackageName);
-        return id == 0 ? null : mResources.getInteger(id);
+        int id = 0;
+        if (!isBaseResource) {
+            id = mSkinResource.getIdentifier(name, TYPE_INTEGER, mSkinPackageName);
+            if (id != 0) {
+                return mSkinResource.getInteger(id);
+            }
+        }
+        id = mBaseContext.getResources().getIdentifier(name, TYPE_INTEGER, mBaseContext.getPackageName());
+        return id == 0 ? null : mBaseContext.getResources().getInteger(id);
     }
 
     @Nullable
     public int[] getIntArray(String name) {
-        int id = mResources.getIdentifier(name, TYPE_ARRAY, mPluginPackageName);
-        return id == 0 ? null : mResources.getIntArray(id);
+        int id = 0;
+        if (!isBaseResource) {
+            id = mSkinResource.getIdentifier(name, TYPE_ARRAY, mSkinPackageName);
+            if (id != 0) {
+                return mSkinResource.getIntArray(id);
+            }
+        }
+        id = mBaseContext.getResources().getIdentifier(name, TYPE_ARRAY, mBaseContext.getPackageName());
+        return id == 0 ? null : mBaseContext.getResources().getIntArray(id);
     }
 
     @Nullable
     public Integer getDimensionPixelSize(String name) {
-        int id = mResources.getIdentifier(name, TYPE_DIMENSION, mPluginPackageName);
-        return id == 0 ? null : mResources.getDimensionPixelSize(id);
+        int id = 0;
+        if (!isBaseResource) {
+            id = mSkinResource.getIdentifier(name, TYPE_DIMENSION, mSkinPackageName);
+            if (id != 0) {
+                return mSkinResource.getDimensionPixelSize(id);
+            }
+        }
+        id = mBaseContext.getResources().getIdentifier(name, TYPE_DIMENSION, mBaseContext.getPackageName());
+        return id == 0 ? null : mBaseContext.getResources().getDimensionPixelSize(id);
     }
 
     @Nullable
     public Boolean getBoolean(String name) {
-        int id = mResources.getIdentifier(name, TYPE_BOOL, mPluginPackageName);
-        return id == 0 ? null : mResources.getBoolean(id);
+        int id = 0;
+        if (!isBaseResource) {
+            id = mSkinResource.getIdentifier(name, TYPE_BOOL, mSkinPackageName);
+            if (id != 0) {
+                return mSkinResource.getBoolean(id);
+            }
+        }
+        id = mBaseContext.getResources().getIdentifier(name, TYPE_BOOL, mBaseContext.getPackageName());
+        return id == 0 ? null : mBaseContext.getResources().getBoolean(id);
     }
 
     @Nullable
     public String getString(String name) {
-        int id = mResources.getIdentifier(name, TYPE_STRING, mPluginPackageName);
-        return id == 0 ? null : mResources.getString(id);
+        int id = 0;
+        if (!isBaseResource) {
+            id = mSkinResource.getIdentifier(name, TYPE_STRING, mSkinPackageName);
+            if (id != 0) {
+                return mSkinResource.getString(id);
+            }
+        }
+        id = mBaseContext.getResources().getIdentifier(name, TYPE_STRING, mBaseContext.getPackageName());
+        return id == 0 ? null : mBaseContext.getResources().getString(id);
     }
 
     @Nullable
     public String[] getStringArray(String name) {
-        int id = mResources.getIdentifier(name, TYPE_ARRAY, mPluginPackageName);
-        return id == 0 ? null : mResources.getStringArray(id);
+        int id = 0;
+        if (!isBaseResource) {
+            id = mSkinResource.getIdentifier(name, TYPE_ARRAY, mSkinPackageName);
+            if (id != 0) {
+                return mSkinResource.getStringArray(id);
+            }
+        }
+        id = mBaseContext.getResources().getIdentifier(name, TYPE_ARRAY, mBaseContext.getPackageName());
+        return id == 0 ? null : mBaseContext.getResources().getStringArray(id);
     }
 
     private static class VectorDrawableSupport {
@@ -198,6 +259,4 @@ public class ResourceManager {
             return VectorDrawableLoader.loadDrawable(mReplaceResContext, mRes, resId);
         }
     }
-
-
 }

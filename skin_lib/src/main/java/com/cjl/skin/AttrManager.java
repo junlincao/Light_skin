@@ -4,7 +4,6 @@ import android.content.res.ColorStateList;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
 import android.widget.AbsListView;
@@ -51,9 +50,9 @@ public final class AttrManager {
          * 设置资源值到View中
          *
          * @param view view
-         * @param obj  皮肤资源值，比如Drawable，ColorStateList
+         * @param obj  皮肤或者默认包中的资源值，比如Drawable，ColorStateList(皮肤包为空则取默认包中值)
          */
-        void apply(View view, @NonNull T obj);
+        void apply(View view, T obj);
 
         /**
          * 从皮肤资源中读取资源值
@@ -116,7 +115,7 @@ public final class AttrManager {
         }
 
         @Override
-        public void apply(View view, @NonNull Void resName) {
+        public void apply(View view, Void resName) {
         }
 
         @Override
@@ -189,7 +188,7 @@ public final class AttrManager {
             }
 
             @Override
-            public void apply(View view, @NonNull Drawable drawable) {
+            public void apply(View view, Drawable drawable) {
                 if (Build.VERSION.SDK_INT >= 16) {
                     view.setBackground(drawable);
                 } else {
@@ -205,7 +204,7 @@ public final class AttrManager {
             }
 
             @Override
-            public void apply(View view, @NonNull ColorStateList color) {
+            public void apply(View view, ColorStateList color) {
                 if (view instanceof TextView) {
                     ((TextView) view).setTextColor(color);
                 }
@@ -219,7 +218,7 @@ public final class AttrManager {
             }
 
             @Override
-            public void apply(View view, @NonNull Drawable drawable) {
+            public void apply(View view, Drawable drawable) {
                 if (view instanceof ImageView) {
                     ((ImageView) view).setImageDrawable(drawable);
                 }
@@ -233,7 +232,7 @@ public final class AttrManager {
             }
 
             @Override
-            public void apply(View view, @NonNull ColorStateList color) {
+            public void apply(View view, ColorStateList color) {
                 if (view instanceof TextView) {
                     ((TextView) view).setHintTextColor(color);
                 }
@@ -247,7 +246,7 @@ public final class AttrManager {
             }
 
             @Override
-            public void apply(View view, @NonNull Drawable drawable) {
+            public void apply(View view, Drawable drawable) {
                 if (view instanceof AbsListView) {
                     ((AbsListView) view).setSelector(drawable);
                 }
@@ -261,7 +260,7 @@ public final class AttrManager {
             }
 
             @Override
-            public void apply(View view, @NonNull Drawable drawable) {
+            public void apply(View view, Drawable drawable) {
                 if (view instanceof ListView) {
                     ((ListView) view).setDivider(drawable);
                 }
@@ -275,7 +274,7 @@ public final class AttrManager {
             }
 
             @Override
-            public void apply(View view, @NonNull Drawable obj) {
+            public void apply(View view, Drawable obj) {
                 if (view instanceof FrameLayout) {
                     ((FrameLayout) view).setForeground(obj);
                 } else if (Build.VERSION.SDK_INT >= 23) {

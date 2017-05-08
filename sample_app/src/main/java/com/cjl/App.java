@@ -1,7 +1,6 @@
 package com.cjl;
 
 import android.app.Application;
-import android.support.annotation.NonNull;
 import android.view.View;
 
 import com.cjl.skin.AttrManager;
@@ -31,7 +30,7 @@ public class App extends Application {
             }
 
             @Override
-            public void apply(View view, @NonNull Integer obj) {
+            public void apply(View view, Integer obj) {
                 if (view instanceof CustomView1) {
                     ((CustomView1) view).setTextColor(obj);
                 }
@@ -45,7 +44,7 @@ public class App extends Application {
             }
 
             @Override
-            public void apply(View view, @NonNull Integer pd) {
+            public void apply(View view, Integer pd) {
                 view.setPadding(pd, pd, pd, pd);
             }
 
